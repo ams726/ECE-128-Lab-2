@@ -1,0 +1,95 @@
+`timescale 1ns / 1ps
+
+module Seven_Segment_project_lab2(
+    input [1:0] i0, i1, i2, i3,
+    input [1:0] s,
+    output [6:0] seg
+);
+    wire [1:0] yt;
+    wire [3:0] ytt;
+
+    assign ytt = {2'b00, yt};  
+
+    behv_mux_4_1 uut (
+        .i0(i0),
+        .i1(i1),
+        .i2(i2),
+        .i3(i3),
+        .s(s),
+        .o(yt)
+    );
+
+    BCD_7_SEG uut2 (
+        .bcd(ytt),
+        .seg(seg)
+    );
+
+endmodule
+
+module BCD_7_SEG(
+    input [3:0] bcd,
+    output reg [6:0] seg
+);
+    always @(*) begin
+        case(bcd)
+            4'b0000: seg = 7'b1000000;
+            4'b0001: seg = 7'b1111001;
+            4'b0010: seg = 7'b0100100;
+            4'b0011: seg = 7'b0110000;
+            default: seg = 7'b1111111;
+        endcase
+    end
+endmodule
+
+module behv_mux_4_1(
+    input [1:0] i0, i1, i2, i3,
+    input [1:0] s,
+    output reg [1:0] o
+);
+    always @(*) begin
+        case(s)
+            2'b00: o = i0;
+            2'b01: o = i1;
+            2'b10: o = i2;
+            2'b11: o = i3;
+            default: o = 2'b00;
+        endcase
+    end
+endmodule
+
+//------------------------------------------------------------------
+
+`timescale 1ns / 1ps
+
+module Seven_Segment_project_lab2_tb;
+
+    reg [1:0] i0, i1, i2, i3;
+    reg [1:0] s;
+    wire [6:0] seg;
+
+    Seven_Segment_project_lab2 uut (
+        .i0(i0),
+        .i1(i1),
+        .i2(i2),
+        .i3(i3),
+        .s(s),
+        .seg(seg)
+    );
+
+    initial begin
+        i0 = 2'b00; i1 = 2'b01; i2 = 2'b10; i3 = 2'b11; s = 2'b00;
+        #10;
+
+        s = 2'b01;
+        #10;
+
+        s = 2'b10;
+        #10;
+
+        s = 2'b11;
+        #10;
+
+        #10;
+        $finish;
+    end
+endmodule
